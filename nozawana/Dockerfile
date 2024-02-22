@@ -1,30 +1,34 @@
-# FROM：使用するイメージ、バージョン
-FROM ruby:3.1
+# 最新のrubyイメージを取得
+FROM ruby:3.2.2
 
-# Rails 7ではWebpackerが標準では組み込まれなくなったので、yarnやnodejsのインストールが不要
+# 環境変数
+ENV APP_HOME /app
+ENV TZ Asia/Tokyo
+ENV PORT 3001
+ENV HOST 0.0.0.0
 
-# ruby3.1のイメージがBundler version 2.3.7で失敗するので、gemのバージョンを追記
-ARG RUBYGEMS_VERSION=3.3.20
+# WORKDIR：作業ディレクトリ
+WORKDIR ${APP_HOME}
 
-RUN mkdir /nozawana
+# ローカルのGemfileをコンテナ内の/app/Gemfileに
+COPY Gemfile ${APP_HOME}/Gemfile
+COPY Gemfile.lock ${APP_HOME}/Gemfile.lock
 
-WORKDIR /nozawana
+# Rails7ではWebpackerが標準では組み込まれなくなったので、yarnやnodejsのインストールが不要
+RUN apt-get update
+RUN apt-get install -y \
+        git
 
-COPY Gemfile /nozawana/Gemfile
+# Gemをアップデート
+RUN bundle install
 
-COPY Gemfile.lock /nozawana/Gemfile.lock
+COPY . ${APP_HOME}
 
-# RubyGemsをアップデート
-RUN gem update --system ${RUBYGEMS_VERSION} && \
-    bundle install
-
-COPY . /nozawana
-
-# コンテナ起動時に実行させるスクリプトを追加
+# コンテナ起動時に実行させるスクリプト
 COPY entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
-EXPOSE 3001
+EXPOSE ${PORT}
 
-# Rails サーバ起動
-CMD ["rails", "server", "-b", "0.0.0.0"]
+# コンテナ実行時にRails サーバ起動
+CMD ["bundle", "exec", "rails", "server", "-b", ${HOST}]
