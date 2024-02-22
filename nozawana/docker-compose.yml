@@ -1,37 +1,22 @@
 version: '3'
 services:
-  # Railsの設定
+  db:
+    platform: linux/amd64
+    image: mysql:5.7
+    volumes:
+      - data-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
   web:
-    # build: .でdocker-compose.ymlと同じフォルダにDockerfileがあることを示す
     build: .
-    # 事前に手元で/tmp/pids/server.pidを削除する
-    command: /bin/sh -c "rm -f tmp/pids/server.pid && rails s -p 3000 -b '0.0.0.0'"
     volumes:
       - .:/app
-    env_file:
-      - .env
     ports:
-      - ${RAILS_PORT}:3000 # 環境変数から参照
-    # true を指定することでコンテナを起動させ続けることができる。
-    tty: true
-    # 標準入出力とエラー出力をコンテナに結びつける設定。
-    stdin_open: true
-    # 起動順を制御する
+      - 3000:3000
     depends_on:
       - db
-    links:
-      - db
-  # Mysqlの設定
-  db:
-    image: mysql:8.0
-    volumes:
-      - db-data:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DB}  # 環境変数から参照
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # 環境変数から参照
-      TZ: "Asia/Tokyo"
-    ports:
-      - "3307:3306"
-    restart: always
+
 volumes:
-  db-data:
+  data-volume:
