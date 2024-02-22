@@ -18,7 +18,7 @@ COPY Gemfile.lock /nozawana/Gemfile.lock
 RUN gem update --system ${RUBYGEMS_VERSION} && \
     bundle install
 
-COPY . /app
+COPY . /nozawana
 
 # コンテナ起動時に実行させるスクリプトを追加
 COPY entrypoint.sh /usr/bin/
