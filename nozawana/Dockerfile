@@ -1,21 +1,30 @@
-FROM ruby:latest
-# ベースにするイメージを指定
+# FROM：使用するイメージ、バージョン
+FROM ruby:3.1
 
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs default-mysql-client vim
-# RailsのインストールやMySQLへの接続に必要なパッケージをインストール
+# Rails 7ではWebpackerが標準では組み込まれなくなったので、yarnやnodejsのインストールが不要
 
-RUN mkdir /nowawana
-# コンテナ内にmyappディレクトリを作成
+# ruby3.1のイメージがBundler version 2.3.7で失敗するので、gemのバージョンを追記
+ARG RUBYGEMS_VERSION=3.3.20
 
-WORKDIR /nowawana
-# 作成したmyappディレクトリを作業用ディレクトリとして設定
+RUN mkdir /nozawana
 
-COPY Gemfile /nowawana/Gemfile
-COPY Gemfile.lock /nowawana/Gemfile.lock
-# ローカルの Gemfile と Gemfile.lock をコンテナ内のmyapp配下にコピー
+WORKDIR /nozawana
 
-RUN bundle install
-# コンテナ内にコピーした Gemfile の bundle install
+COPY Gemfile /nozawana/Gemfile
 
-COPY . /nowawana
-# ローカルのmyapp配下のファイルをコンテナ内のmyapp配下にコピー
+COPY Gemfile.lock /nozawana/Gemfile.lock
+
+# RubyGemsをアップデート
+RUN gem update --system ${RUBYGEMS_VERSION} && \
+    bundle install
+
+COPY . /app
+
+# コンテナ起動時に実行させるスクリプトを追加
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
+EXPOSE 3001
+
+# Rails サーバ起動
+CMD ["rails", "server", "-b", "0.0.0.0"]
