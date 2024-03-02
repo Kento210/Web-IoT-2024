@@ -12,7 +12,7 @@ class DecimalEncoder(json.JSONEncoder):
 
 def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
-    table_name = 'YourTableName'
+    table_name = 'ButtonPressEventTable'
     table = dynamodb.Table(table_name)
     
     try:
