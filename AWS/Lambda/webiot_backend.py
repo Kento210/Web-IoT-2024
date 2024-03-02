@@ -11,15 +11,17 @@ table = dynamodb.Table(table_name)
 def lambda_handler(event, context):
     # リクエストボディを直接取得（API Gatewayを介さないため、eventは既に辞書形式）
     try:
-        # event自体が直接辞書形式のJSONオブジェクト
-        sequence_number = event['sequenceNumber']
-        button_pressed = event['buttonPressed']
+        body = json.loads(event['body'])
     except Exception as e:
         print(e)
         return {
             'statusCode': 400,
             'body': json.dumps('Invalid request body')
         }
+    
+    # リクエストボディからデータを取得
+    sequence_number = body.get('sequenceNumber')
+    button_pressed = body.get('buttonPressed')
 
     # 現在のタイムスタンプ
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
