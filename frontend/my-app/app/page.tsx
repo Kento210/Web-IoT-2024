@@ -6,6 +6,7 @@ import axios from 'axios';
 interface Item {
   sequenceNumber: number;
   buttonPressed: string;
+  timestamp: string; // timestampもAPIのレスポンスに含まれているため、インターフェースに追加
 }
 
 const Page: React.FC = () => {
@@ -24,14 +25,17 @@ const Page: React.FC = () => {
     fetchData();
   }, []);
 
+  // ボタンが押された順序を文字列として取得
+  const pressedOrder = items
+    .sort((a, b) => a.sequenceNumber - b.sequenceNumber)
+    .map(item => item.buttonPressed)
+    .join(' → ');
+
   return (
     <div>
       <h1>Button Pressed Events</h1>
-      <ul>
-        {items.sort((a, b) => a.sequenceNumber - b.sequenceNumber).map((item) => (
-          <li key={item.sequenceNumber}>Button Pressed: {item.buttonPressed}</li>
-        ))}
-      </ul>
+      {/* 押されたボタンの順序を表示 */}
+      <p>User Actions: {pressedOrder}</p>
     </div>
   );
 };
