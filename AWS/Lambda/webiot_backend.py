@@ -9,12 +9,11 @@ table_name = 'ButtonPressEventTable'
 table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
-    # リクエストボディを解析
+    # リクエストボディを直接取得（API Gatewayを介さないため、eventは既に辞書形式）
     try:
-        # event['body']は文字列なので、JSONに変換する必要がある
-        body = json.loads(event['body'])
-        sequence_number = body['sequenceNumber']
-        button_pressed = body['buttonPressed']
+        # event自体が直接辞書形式のJSONオブジェクト
+        sequence_number = event['sequenceNumber']
+        button_pressed = event['buttonPressed']
     except Exception as e:
         print(e)
         return {
