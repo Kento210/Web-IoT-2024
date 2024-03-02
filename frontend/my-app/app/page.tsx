@@ -14,7 +14,7 @@ const Page: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<Item[]>('https://your-api-endpoint');
+        const response = await axios.get<Item[]>('https://rgnc6j4qutn43f5hk3vzu4rmdm0xcfxo.lambda-url.ap-northeast-1.on.aws/');
         setItems(response.data);
       } catch (error) {
         console.error('APIからのデータ取得に失敗:', error);
