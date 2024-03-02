@@ -1,31 +1,26 @@
 import json
 import boto3
 
-# DynamoDBクライアントの初期化
+# DynamoDBリソースを初期化
 dynamodb = boto3.resource('dynamodb')
+# DynamoDBテーブル名を指定
+table_name = 'ButtonPressEventTable'
+table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
-    # DynamoDBテーブル名を指定
-    table = dynamodb.Table('ButtonPressEventTable')
-
-    # テーブルから全ての項目をスキャン
+    # DynamoDBテーブルから全項目を取得
     try:
         response = table.scan()
         items = response['Items']
-        
-        return {
-            'statusCode': 200,
-            'body': json.dumps(items),
-            'headers': {
-                'Content-Type': 'application/json'
-            }
-        }
     except Exception as e:
         print(e)
         return {
             'statusCode': 500,
-            'body': json.dumps({'error': 'Internal server error'}),
-            'headers': {
-                'Content-Type': 'application/json'
-            }
+            'body': json.dumps('Error retrieving data from DynamoDB')
         }
+
+    # 取得したデータをレスポンスとして返す
+    return {
+        'statusCode': 200,
+        'body': json.dumps(items)
+    }
