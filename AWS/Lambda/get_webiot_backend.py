@@ -6,7 +6,7 @@ dynamodb = boto3.resource('dynamodb')
 
 def lambda_handler(event, context):
     # DynamoDBテーブル名を指定
-    table = dynamodb.Table('YourTableName')
+    table = dynamodb.Table('ButtonPressEventTable')
 
     # テーブルから全ての項目をスキャン
     try:
