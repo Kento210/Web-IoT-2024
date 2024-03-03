@@ -21,6 +21,7 @@ const storeIds: { [key: string]: string } = {
 
 const PassingPoints = () => {
   const [data, setData] = useState<StoreData[]>([]);
+  const [points, setPoints] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +33,8 @@ const PassingPoints = () => {
           store: storeIds[id] || '未知の店舗',
         }));
         setData(processedData);
+        // 店舗の数に基づいてポイントを計算
+        setPoints(processedData.length * 10);
       } catch (error) {
         console.error('APIからのデータ取得に失敗しました:', error);
       }
@@ -52,6 +55,7 @@ const PassingPoints = () => {
           </React.Fragment>
         ))}
       </p>
+      <p>獲得ポイント: {points} ポイント</p>
     </div>
   );
 };
