@@ -40,7 +40,13 @@ const PassingPoints = () => {
       }
     };
 
-    fetchData();
+    // 3秒ごとにデータを更新する
+    const interval = setInterval(() => {
+      fetchData();
+    }, 3000);
+
+    // コンポーネントがアンマウントされる時にインターバルをクリアする
+    return () => clearInterval(interval);
   }, []);
 
   return (
