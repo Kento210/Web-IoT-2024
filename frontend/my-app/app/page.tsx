@@ -31,7 +31,9 @@ const Page: React.FC = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get<Item[]>('https://rgnc6j4qutn43f5hk3vzu4rmdm0xcfxo.lambda-url.ap-northeast-1.on.aws/');
-        setItems(response.data);
+        // データをタイムスタンプ順にソート
+        const sortedItems = response.data.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+        setItems(sortedItems);
       } catch (error) {
         console.error('APIからのデータ取得に失敗:', error);
       }
@@ -40,17 +42,23 @@ const Page: React.FC = () => {
     fetchData();
   }, []);
 
-  // ボタンが押された順序とタイムスタンプを店舗名として取得
-  const pressedOrder = items
-    .sort((a, b) => a.sequenceNumber - b.sequenceNumber)
-    .map(item => `${storeIdToName(item.buttonPressed)} (${formatTimestamp(item.timestamp)})`)
-    .join(' → ');
+  // ルートとポイントを取得
+  const routesWithPoints = items.map((item, index) => ({
+    name: storeIdToName(item.buttonPressed),
+    timestamp: formatTimestamp(item.timestamp),
+    points: (index + 1) * 10 // ポイントを計算
+  }));
+
+  // ルートとポイントを文字列で結合
+  const routeDescriptions = routesWithPoints.map((route, index) => 
+    `${index + 1}. ${route.name} (${route.timestamp}) - ${route.points}ポイント`
+  ).join('\n');
 
   return (
     <div>
       <h1>Button Pressed Events</h1>
-      {/* 押されたボタンの順序（店舗名）とタイムスタンプを表示 */}
-      <p>User Actions: {pressedOrder}</p>
+      {/* 押されたボタンの順序（店舗名）、タイムスタンプ、ポイントを表示 */}
+      <pre>User Actions:\n{routeDescriptions}</pre>
     </div>
   );
 };
