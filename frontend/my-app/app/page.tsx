@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import styles from './page.module.css';
 
 // APIレスポンスの型定義
 type ApiResponse = [string, string][];
@@ -33,7 +34,6 @@ const PassingPoints = () => {
           store: storeIds[id] || '未知の店舗',
         }));
         setData(processedData);
-        // 店舗の数に基づいてポイントを計算
         setPoints(processedData.length * 10);
       } catch (error) {
         console.error('APIからのデータ取得に失敗しました:', error);
@@ -44,17 +44,24 @@ const PassingPoints = () => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.container}>
       <h1>通過した店舗とポイント</h1>
-      <p>
-        通過：
-        {data.map(({ store, time }, index) => (
-          <React.Fragment key={index}>
-            {store} ({new Date(time).toLocaleString()})
-            {index < data.length - 1 ? ' → ' : ''}
-          </React.Fragment>
-        ))}
-      </p>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>店舗</th>
+            <th>時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map(({ store, time }, index) => (
+            <tr key={index}>
+              <td>{store}</td>
+              <td>{new Date(time).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <p>獲得ポイント: {points} ポイント</p>
     </div>
   );
