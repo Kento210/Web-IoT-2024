@@ -20,6 +20,8 @@ const storeIds: { [key: string]: string } = {
   '737cd8f720': '店舗C',
 };
 
+const apiURL = 'https://script.googleusercontent.com/macros/echo?user_content_key=2xvDe1Sq4jbHOEaBmfmps8cUCqs7qb6ewJ29HQxqfp92zHhO8-noVQDfCLurjp98dDqrQD7Ukd_P0Hbv7DpWp2C72XPJpUeum5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnP34e736HBGtKXE-8t_StaZ3_ds0s0T-fkpF3U3k8C6cNkhk8l3DsTETdSerGXKmasqjVFlr51yg1sZLyhO_nP76Zu-kJx4lNA&lib=MCqynvoswXh9j_keZKitz8MZtq1kvHJ46';
+
 const PassingPoints = () => {
   const [data, setData] = useState<StoreData[]>([]);
   const [points, setPoints] = useState<number>(0);
@@ -27,7 +29,7 @@ const PassingPoints = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://script.googleusercontent.com/macros/echo?user_content_key=2xvDe1Sq4jbHOEaBmfmps8cUCqs7qb6ewJ29HQxqfp92zHhO8-noVQDfCLurjp98dDqrQD7Ukd_P0Hbv7DpWp2C72XPJpUeum5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnP34e736HBGtKXE-8t_StaZ3_ds0s0T-fkpF3U3k8C6cNkhk8l3DsTETdSerGXKmasqjVFlr51yg1sZLyhO_nP76Zu-kJx4lNA&lib=MCqynvoswXh9j_keZKitz8MZtq1kvHJ46');
+        const response = await fetch(apiURL);
         const apiData: ApiResponse = await response.json();
         const processedData: StoreData[] = apiData.map(([time, id]) => ({
           time,
@@ -40,10 +42,10 @@ const PassingPoints = () => {
       }
     };
 
+    fetchData();
+
     // 3秒ごとにデータを更新する
-    const interval = setInterval(() => {
-      fetchData();
-    }, 3000);
+    const interval = setInterval(fetchData, 3000);
 
     // コンポーネントがアンマウントされる時にインターバルをクリアする
     return () => clearInterval(interval);
