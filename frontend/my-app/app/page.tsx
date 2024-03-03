@@ -1,59 +1,60 @@
 // app/page.tsx
 "use client";
+
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import './page.module.css'
 
-interface Item {
-  sequenceNumber: number;
-  buttonPressed: string;
-  timestamp: string;
-}
+// APIレスポンスの型定義
+type ApiResponse = [string, string][];
 
-const storeIdToName = (id: string): string => {
-  switch(id) {
-    case 'f3798cf9': return '店舗A';
-    case '1310d4f720': return '店舗B';
-    case '737cd8f720': return '店舗C';
-    default: return '未知の店舗';
-  }
-}
+// 加工後のデータの型定義
+type StoreData = {
+  time: string;
+  store: string;
+};
 
-const formatTimestamp = (timestamp: string): string => {
-  // ISO 8601形式のタイムスタンプをより読みやすい形式に変換
-  return new Date(timestamp).toLocaleString();
-}
+// 店舗IDと店舗名のマッピング
+const storeIds: { [key: string]: string } = {
+  'f3798cf9': '店舗A',
+  '1310d4f720': '店舗B',
+  '737cd8f720': '店舗C',
+};
 
-const Page: React.FC = () => {
-  const [items, setItems] = useState<Item[]>([]);
+const PassingPoints = () => {
+  const [data, setData] = useState<StoreData[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<Item[]>('https://rgnc6j4qutn43f5hk3vzu4rmdm0xcfxo.lambda-url.ap-northeast-1.on.aws/');
-        // データをタイムスタンプ順にソート
-        const sortedItems = response.data.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-        setItems(sortedItems);
+        const response = await fetch('https://script.googleusercontent.com/macros/echo?user_content_key=2xvDe1Sq4jbHOEaBmfmps8cUCqs7qb6ewJ29HQxqfp92zHhO8-noVQDfCLurjp98dDqrQD7Ukd_P0Hbv7DpWp2C72XPJpUeum5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnP34e736HBGtKXE-8t_StaZ3_ds0s0T-fkpF3U3k8C6cNkhk8l3DsTETdSerGXKmasqjVFlr51yg1sZLyhO_nP76Zu-kJx4lNA&lib=MCqynvoswXh9j_keZKitz8MZtq1kvHJ46');
+        const apiData: ApiResponse = await response.json();
+        const processedData: StoreData[] = apiData.map(([time, id]) => ({
+          time,
+          store: storeIds[id] || '未知の店舗',
+        }));
+        setData(processedData);
       } catch (error) {
-        console.error('APIからのデータ取得に失敗:', error);
+        console.error('APIからのデータ取得に失敗しました:', error);
       }
     };
 
     fetchData();
   }, []);
 
-  // ルートを指定された形式で表示
-  const routeDescription = items
-    .map((item, index) => `${storeIdToName(item.buttonPressed)} (${formatTimestamp(item.timestamp)})`)
-    .join(' → ');
-
   return (
     <div>
-      <h1>Button Pressed Events</h1>
-      {/* 押されたボタンの順序（店舗名）、タイムスタンプを指定された形式で表示 */}
-      <p>User Actions: {routeDescription}</p>
+      <h1>通過した店舗とポイント</h1>
+      <p>
+        通過：
+        {data.map(({ store, time }, index) => (
+          <React.Fragment key={index}>
+            {store} ({new Date(time).toLocaleString()})
+            {index < data.length - 1 ? ' → ' : ''}
+          </React.Fragment>
+        ))}
+      </p>
     </div>
   );
 };
 
-export default Page;
+export default PassingPoints;
+
