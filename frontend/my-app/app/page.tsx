@@ -19,13 +19,18 @@ const storeIdToName = (id: string): string => {
   }
 }
 
+const formatTimestamp = (timestamp: string): string => {
+  // ISO 8601形式のタイムスタンプをより読みやすい形式に変換
+  return new Date(timestamp).toLocaleString();
+}
+
 const Page: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<Item[]>('https://script.googleusercontent.com/macros/echo?user_content_key=q_0TZOu6HaxynGp0yenNRSraVEZcIiNSx_jLf_rzh8h-FzMASDiLSPJJC7zHgnXAzrqlfs7jSGb3Qw-34CbLBvFVk6p_Upbym5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnP34e736HBGtKXE-8t_StaZ3_ds0s0T-fkpF3U3k8C6cNkhk8l3DsTETdSerGXKmasqjVFlr51yg1sZLyhO_nP76Zu-kJx4lNA&lib=MCqynvoswXh9j_keZKitz8MZtq1kvHJ46');
+        const response = await axios.get<Item[]>('https://rgnc6j4qutn43f5hk3vzu4rmdm0xcfxo.lambda-url.ap-northeast-1.on.aws/');
         setItems(response.data);
       } catch (error) {
         console.error('APIからのデータ取得に失敗:', error);
@@ -35,16 +40,16 @@ const Page: React.FC = () => {
     fetchData();
   }, []);
 
-  // ボタンが押された順序を店舗名として取得
+  // ボタンが押された順序とタイムスタンプを店舗名として取得
   const pressedOrder = items
     .sort((a, b) => a.sequenceNumber - b.sequenceNumber)
-    .map(item => storeIdToName(item.buttonPressed))
+    .map(item => `${storeIdToName(item.buttonPressed)} (${formatTimestamp(item.timestamp)})`)
     .join(' → ');
 
   return (
     <div>
       <h1>Button Pressed Events</h1>
-      {/* 押されたボタンの順序（店舗名）を表示 */}
+      {/* 押されたボタンの順序（店舗名）とタイムスタンプを表示 */}
       <p>User Actions: {pressedOrder}</p>
     </div>
   );
