@@ -1,27 +1,29 @@
 /* page.module.css */
-.body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
-  padding: 20px;
-}
-
-.header {
-  color: #333;
-  text-align: center;
-}
-
-.userActions {
-  background-color: #fff;
-  color: #333;
-  padding: 10px 15px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  display: inline-block;
-  margin: 20px auto;
-}
-
 .container {
-  width: 80%;
   max-width: 600px;
-  margin: auto;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.table tr:hover {
+  background-color: #f4f4f4;
+}
+
+p {
+  margin-top: 20px;
+  font-size: 16px;
 }
