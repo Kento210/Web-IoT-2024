@@ -42,23 +42,16 @@ const Page: React.FC = () => {
     fetchData();
   }, []);
 
-  // ルートとポイントを取得
-  const routesWithPoints = items.map((item, index) => ({
-    name: storeIdToName(item.buttonPressed),
-    timestamp: formatTimestamp(item.timestamp),
-    points: (index + 1) * 10 // ポイントを計算
-  }));
-
-  // ルートとポイントを文字列で結合
-  const routeDescriptions = routesWithPoints.map((route, index) => 
-    `${index + 1}. ${route.name} (${route.timestamp}) - ${route.points}ポイント`
-  ).join('\n');
+  // ルートを指定された形式で表示
+  const routeDescription = items
+    .map((item, index) => `${storeIdToName(item.buttonPressed)} (${formatTimestamp(item.timestamp)})`)
+    .join(' → ');
 
   return (
     <div>
       <h1>Button Pressed Events</h1>
-      {/* 押されたボタンの順序（店舗名）、タイムスタンプ、ポイントを表示 */}
-      <pre>User Actions:\n{routeDescriptions}</pre>
+      {/* 押されたボタンの順序（店舗名）、タイムスタンプを指定された形式で表示 */}
+      <p>User Actions: {routeDescription}</p>
     </div>
   );
 };
